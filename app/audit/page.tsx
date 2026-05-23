@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import {
   Plus,
   Trash2,
@@ -57,14 +57,14 @@ const USE_CASES = [
 // ANIMATIONS
 // ==========================================
 
-const fadeInUpVariant = {
+const fadeInUpVariant: Variants = {
   hidden: { opacity: 0, y: 15 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.4,
-      ease: [0.16, 1, 0.3, 1],
+      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
     },
   },
 };
@@ -80,7 +80,7 @@ const staggerContainerVariant = {
   },
 };
 
-const cardAnimationVariant = {
+const cardAnimationVariant: Variants = {
   hidden: {
     opacity: 0,
     scale: 0.96,
@@ -92,7 +92,7 @@ const cardAnimationVariant = {
     y: 0,
     transition: {
       duration: 0.3,
-      ease: 'easeOut',
+      ease: [0.22, 1, 0.36, 1],
     },
   },
   exit: {
