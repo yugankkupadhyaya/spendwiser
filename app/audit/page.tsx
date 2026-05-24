@@ -1,7 +1,8 @@
 'use client';
-
+import { Resolver } from 'react-hook-form';
 import React from 'react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import {
@@ -16,117 +17,46 @@ import {
   Users,
   PieChart,
 } from 'lucide-react';
-
-// ==========================================
-// TYPES & DICTIONARIES
-// ==========================================
-
-type ToolCardValues = {
-  toolId: string;
-  planName: string;
-  monthlySpend: string;
-  seatsCount: string;
-};
-
-type AuditFormValues = {
-  teamSize: string;
-  primaryUseCase: string;
-  tools: ToolCardValues[];
-};
-
-const SUPPORTED_TOOLS = [
-  { id: 'chatgpt', name: 'ChatGPT' },
-  { id: 'claude', name: 'Claude' },
-  { id: 'cursor', name: 'Cursor' },
-  { id: 'copilot', name: 'GitHub Copilot' },
-  { id: 'gemini', name: 'Gemini' },
-  { id: 'openai-api', name: 'OpenAI API' },
-  { id: 'anthropic-api', name: 'Anthropic API' },
-  { id: 'windsurf', name: 'Windsurf' },
-];
-
-const USE_CASES = [
-  { id: 'coding', name: 'Coding & Engineering' },
-  { id: 'writing', name: 'Writing & Marketing' },
-  { id: 'research', name: 'Research & Strategy' },
-  { id: 'data-analysis', name: 'Data Analysis & BI' },
-  { id: 'mixed', name: 'Mixed Operations' },
-];
-
-// ==========================================
-// ANIMATIONS
-// ==========================================
-
-const fadeInUpVariant: Variants = {
-  hidden: { opacity: 0, y: 15 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-    },
-  },
-};
-
-const staggerContainerVariant = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-const cardAnimationVariant: Variants = {
-  hidden: {
-    opacity: 0,
-    scale: 0.96,
-    y: 10,
-  },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: {
-      duration: 0.3,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.95,
-    y: -10,
-    transition: {
-      duration: 0.2,
-    },
-  },
-};
-
+import { AuditFormValues, ToolCardValues } from '../../types/audit.types';
+import { auditFormValuesValidation } from '../../validation/audit.validation';
+import {
+  USE_CASES,
+  SUPPORTED_TOOLS,
+  fadeInUpVariant,
+  staggerContainerVariant,
+  cardAnimationVariant,
+} from '../../constants/audit.contants';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useAuditStore } from '../../store/audit.store';
 export default function Page() {
-  const { register, control, handleSubmit, watch } = useForm<AuditFormValues>({
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<AuditFormValues>({
+    resolver: zodResolver(auditFormValuesValidation) as Resolver<AuditFormValues>,
     defaultValues: {
-      teamSize: '12',
+      teamSize: 12,
       primaryUseCase: 'coding',
       tools: [
         {
           toolId: 'chatgpt',
           planName: 'ChatGPT Team',
-          monthlySpend: '150',
-          seatsCount: '5',
+          monthlySpend: 150,
+          seatsCount: 5,
         },
         {
           toolId: 'cursor',
           planName: 'Cursor Business',
-          monthlySpend: '240',
-          seatsCount: '6',
+          monthlySpend: 240,
+          seatsCount: 6,
         },
       ],
     },
   });
-
+  const { setAuditData } = useAuditStore();
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'tools',
@@ -142,7 +72,8 @@ export default function Page() {
   const estimatedYearlySpend = estimatedMonthlySpend * 12;
 
   const onSubmitForm = (data: AuditFormValues) => {
-    console.log('SpendWise Audit Submission:', data);
+    setAuditData(data);
+    return toast.success('Audit submitted successfully!');
   };
 
   return (
@@ -414,8 +345,8 @@ export default function Page() {
                   append({
                     toolId: 'chatgpt',
                     planName: 'ChatGPT Team',
-                    monthlySpend: '',
-                    seatsCount: '',
+                    monthlySpend: 0,
+                    seatsCount: 0,
                   })
                 }
                 className="w-full border border-dashed border-white/5 bg-[#0A0A0C]/30 hover:bg-[#0A0A0C]/60 text-neutral-400 hover:text-white transition-colors text-xs font-mono py-4 flex items-center justify-center space-x-2 rounded-2xl"
