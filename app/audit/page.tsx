@@ -37,21 +37,16 @@ export default function Page() {
     formState: { errors },
   } = useForm<AuditFormValues>({
     resolver: zodResolver(auditFormValuesValidation) as Resolver<AuditFormValues>,
+
     defaultValues: {
-      teamSize: 12,
-      primaryUseCase: 'coding',
+      teamSize: undefined,
+      primaryUseCase: '',
       tools: [
         {
-          toolId: 'chatgpt',
-          planName: 'ChatGPT Team',
-          monthlySpend: 150,
-          seatsCount: 5,
-        },
-        {
-          toolId: 'cursor',
-          planName: 'Cursor Business',
-          monthlySpend: 240,
-          seatsCount: 6,
+          toolId: '',
+          planName: '',
+          monthlySpend: undefined,
+          seatsCount: undefined,
         },
       ],
     },
@@ -74,6 +69,7 @@ export default function Page() {
   const onSubmitForm = (data: AuditFormValues) => {
     setAuditData(data);
     return toast.success('Audit submitted successfully!');
+  a
   };
 
   return (
