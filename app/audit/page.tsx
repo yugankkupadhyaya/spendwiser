@@ -43,7 +43,7 @@ export default function Page() {
 
     defaultValues: {
       teamSize: undefined,
-      primaryUseCase: '',
+      primaryUseCase: undefined,
       tools: [
         {
           toolId: '',

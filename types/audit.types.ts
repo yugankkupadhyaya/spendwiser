@@ -1,3 +1,5 @@
+import { UseCase } from './usecases.types';
+
 export type ToolCardValues = {
   toolId: string;
   planName: string;
@@ -7,6 +9,6 @@ export type ToolCardValues = {
 
 export type AuditFormValues = {
   teamSize: number;
-  primaryUseCase: string;
+  primaryUseCase: UseCase;
   tools: ToolCardValues[];
 };
