@@ -1,24 +1,5 @@
 import { Variants } from "framer-motion";
 
-export const SUPPORTED_TOOLS = [
-  { id: 'chatgpt', name: 'ChatGPT' },
-  { id: 'claude', name: 'Claude' },
-  { id: 'cursor', name: 'Cursor' },
-  { id: 'copilot', name: 'GitHub Copilot' },
-  { id: 'gemini', name: 'Gemini' },
-  { id: 'openai-api', name: 'OpenAI API' },
-  { id: 'anthropic-api', name: 'Anthropic API' },
-  { id: 'windsurf', name: 'Windsurf' },
-];
-
-export const USE_CASES = [
-  { id: 'coding', name: 'Coding & Engineering' },
-  { id: 'writing', name: 'Writing & Marketing' },
-  { id: 'research', name: 'Research & Strategy' },
-  { id: 'data-analysis', name: 'Data Analysis & BI' },
-  { id: 'mixed', name: 'Mixed Operations' },
-];
-
 export const fadeInUpVariant: Variants = {
   hidden: { opacity: 0, y: 15 },
   visible: {

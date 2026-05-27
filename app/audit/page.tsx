@@ -19,15 +19,18 @@ import {
 } from 'lucide-react';
 import { AuditFormValues, ToolCardValues } from '../../types/audit.types';
 import { auditFormValuesValidation } from '../../validation/audit.validation';
+import { USE_CASES, SUPPORTED_TOOLS } from '../../constants/audit.constants';
 import {
-  USE_CASES,
-  SUPPORTED_TOOLS,
   fadeInUpVariant,
   staggerContainerVariant,
   cardAnimationVariant,
-} from '../../constants/audit.contants';
+} from '../../lib/motion/animation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuditStore } from '../../store/audit.store';
+import { PLAN_TIERS } from '../../constants/plan-tier.constants';
+import { runAuditEngine } from '../../lib/audit-engine/run-audit-engine';
+import { useFindingsStore } from '../../store/findings.store';
+import { useRouter } from 'next/navigation';
 export default function Page() {
   const {
     register,
@@ -52,11 +55,13 @@ export default function Page() {
     },
   });
   const { setAuditData } = useAuditStore();
+  const { setAuditFindings } = useFindingsStore();
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'tools',
   });
-
+  const router = useRouter();
   const watchedTools = watch('tools') || [];
   const watchedTeamSize = watch('teamSize') || '0';
 
@@ -68,8 +73,11 @@ export default function Page() {
 
   const onSubmitForm = (data: AuditFormValues) => {
     setAuditData(data);
-    return toast.success('Audit submitted successfully!');
-  a
+    const findings = runAuditEngine(data);
+
+    setAuditFindings(findings);
+    toast.success('Audit submitted successfully!');
+    router.push('/audit/results');
   };
 
   return (
@@ -272,6 +280,8 @@ export default function Page() {
                             {...register(`tools.${index}.toolId` as const)}
                             className="w-full bg-[#111115] border border-white/5 text-xs text-white p-2.5 rounded-xl outline-none focus:border-indigo-500/50 appearance-none cursor-pointer"
                           >
+                            {' '}
+                            <option value="">Select Tool</option>
                             {SUPPORTED_TOOLS.map((t) => (
                               <option key={t.id} value={t.id}>
                                 {t.name}
@@ -285,12 +295,18 @@ export default function Page() {
                             Plan Tier
                           </label>
 
-                          <input
-                            type="text"
+                          <select
                             {...register(`tools.${index}.planName` as const)}
-                            placeholder="e.g. ChatGPT Team"
-                            className="w-full bg-[#111115] border border-white/5 text-xs text-white p-2.5 rounded-xl outline-none focus:border-indigo-500/50"
-                          />
+                            className="w-full bg-[#111115] border border-white/5 text-xs text-white p-2.5 rounded-xl outline-none focus:border-indigo-500/50 appearance-none cursor-pointer"
+                          >
+                            <option value="">Select Plan</option>
+
+                            {PLAN_TIERS.map((t) => (
+                              <option key={t.id} value={t.id} className="bg-[#0A0A0C] text-white">
+                                {t.name}
+                              </option>
+                            ))}
+                          </select>
                         </div>
 
                         <div className="space-y-1.5">
