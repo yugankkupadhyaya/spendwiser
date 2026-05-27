@@ -2,130 +2,478 @@ export type PlanTier = 'free' | 'pro' | 'team' | 'business' | 'enterprise';
 
 export type RecommendedTeamSize = 'solo' | 'startup' | 'small-team' | 'enterprise';
 
+export const TIER_RANK: Record<PlanTier, number> = {
+  free: 0,
+  pro: 1,
+  team: 2,
+  business: 3,
+  enterprise: 4,
+};
+
+export const TEAM_SCALE_RANK: Record<RecommendedTeamSize, number> = {
+  solo: 0,
+  startup: 1,
+  'small-team': 2,
+  enterprise: 3,
+};
+
 export type PlanCatalogEntry = {
   id: string;
-
   name: string;
-
+  toolId: string;
   tier: PlanTier;
-
+  tierRank: number;
   recommendedTeamSize: RecommendedTeamSize;
-
   suitableUseCases: string[];
-
+  perSeatCost?: number;
+  monthlyFlatCost?: number;
   advancedFeatures: boolean;
 };
 
 export const PLAN_CATALOG: Record<string, PlanCatalogEntry> = {
   'chatgpt-free': {
     id: 'chatgpt-free',
-
     name: 'ChatGPT Free',
-
+    toolId: 'chatgpt',
     tier: 'free',
-
+    tierRank: 0,
     recommendedTeamSize: 'solo',
-
     suitableUseCases: ['writing', 'research', 'coding'],
-
+    perSeatCost: 0,
     advancedFeatures: false,
   },
-
   'chatgpt-pro': {
     id: 'chatgpt-pro',
-
     name: 'ChatGPT Pro',
-
+    toolId: 'chatgpt',
     tier: 'pro',
-
+    tierRank: 1,
     recommendedTeamSize: 'startup',
-
     suitableUseCases: ['coding', 'writing', 'research'],
-
+    perSeatCost: 20,
     advancedFeatures: true,
   },
-
   'chatgpt-team': {
     id: 'chatgpt-team',
-
     name: 'ChatGPT Team',
-
+    toolId: 'chatgpt',
     tier: 'team',
-
+    tierRank: 2,
     recommendedTeamSize: 'small-team',
-
     suitableUseCases: ['coding', 'startup', 'mixed'],
-
+    perSeatCost: 25,
     advancedFeatures: true,
   },
-
   'chatgpt-enterprise': {
     id: 'chatgpt-enterprise',
-
     name: 'ChatGPT Enterprise',
-
+    toolId: 'chatgpt',
     tier: 'enterprise',
-
+    tierRank: 4,
     recommendedTeamSize: 'enterprise',
-
     suitableUseCases: ['enterprise', 'mixed', 'ai-development'],
-
+    perSeatCost: 60,
     advancedFeatures: true,
   },
-
-  'cursor-pro': {
-    id: 'cursor-pro',
-
-    name: 'Cursor Pro',
-
-    tier: 'pro',
-
-    recommendedTeamSize: 'startup',
-
-    suitableUseCases: ['coding', 'ai-development'],
-
-    advancedFeatures: true,
-  },
-
-  'cursor-business': {
-    id: 'cursor-business',
-
-    name: 'Cursor Business',
-
-    tier: 'business',
-
-    recommendedTeamSize: 'small-team',
-
-    suitableUseCases: ['coding', 'enterprise'],
-
-    advancedFeatures: true,
-  },
-
-  'jira-free': {
-    id: 'jira-free',
-
-    name: 'Jira Free',
-
+  'claude-free': {
+    id: 'claude-free',
+    name: 'Claude Free',
+    toolId: 'claude',
     tier: 'free',
-
-    recommendedTeamSize: 'startup',
-
-    suitableUseCases: ['startup', 'coding'],
-
+    tierRank: 0,
+    recommendedTeamSize: 'solo',
+    suitableUseCases: ['writing', 'research', 'coding'],
+    perSeatCost: 0,
     advancedFeatures: false,
   },
-
-  'jira-enterprise': {
-    id: 'jira-enterprise',
-
-    name: 'Jira Enterprise',
-
-    tier: 'enterprise',
-
-    recommendedTeamSize: 'enterprise',
-
-    suitableUseCases: ['enterprise', 'product-management'],
-
+  'claude-pro': {
+    id: 'claude-pro',
+    name: 'Claude Pro',
+    toolId: 'claude',
+    tier: 'pro',
+    tierRank: 1,
+    recommendedTeamSize: 'startup',
+    suitableUseCases: ['writing', 'research', 'coding'],
+    perSeatCost: 20,
     advancedFeatures: true,
   },
+  'claude-team': {
+    id: 'claude-team',
+    name: 'Claude Team',
+    toolId: 'claude',
+    tier: 'team',
+    tierRank: 2,
+    recommendedTeamSize: 'small-team',
+    suitableUseCases: ['writing', 'research', 'coding'],
+    perSeatCost: 25,
+    advancedFeatures: true,
+  },
+  'gemini-free': {
+    id: 'gemini-free',
+    name: 'Gemini Free',
+    toolId: 'gemini',
+    tier: 'free',
+    tierRank: 0,
+    recommendedTeamSize: 'solo',
+    suitableUseCases: ['research', 'writing', 'coding'],
+    perSeatCost: 0,
+    advancedFeatures: false,
+  },
+  'gemini-pro': {
+    id: 'gemini-pro',
+    name: 'Gemini Pro',
+    toolId: 'gemini',
+    tier: 'pro',
+    tierRank: 1,
+    recommendedTeamSize: 'startup',
+    suitableUseCases: ['research', 'writing', 'coding'],
+    perSeatCost: 20,
+    advancedFeatures: true,
+  },
+  'cursor-pro': {
+    id: 'cursor-pro',
+    name: 'Cursor Pro',
+    toolId: 'cursor',
+    tier: 'pro',
+    tierRank: 1,
+    recommendedTeamSize: 'startup',
+    suitableUseCases: ['coding', 'ai-development'],
+    monthlyFlatCost: 20,
+    advancedFeatures: true,
+  },
+  'cursor-business': {
+    id: 'cursor-business',
+    name: 'Cursor Business',
+    toolId: 'cursor',
+    tier: 'business',
+    tierRank: 3,
+    recommendedTeamSize: 'small-team',
+    suitableUseCases: ['coding', 'enterprise'],
+    perSeatCost: 40,
+    advancedFeatures: true,
+  },
+  'copilot-free': {
+    id: 'copilot-free',
+    name: 'GitHub Copilot Free',
+    toolId: 'copilot',
+    tier: 'free',
+    tierRank: 0,
+    recommendedTeamSize: 'solo',
+    suitableUseCases: ['coding', 'ai-development'],
+    perSeatCost: 0,
+    advancedFeatures: false,
+  },
+  'copilot-pro': {
+    id: 'copilot-pro',
+    name: 'GitHub Copilot Pro',
+    toolId: 'copilot',
+    tier: 'pro',
+    tierRank: 1,
+    recommendedTeamSize: 'startup',
+    suitableUseCases: ['coding', 'ai-development'],
+    perSeatCost: 10,
+    advancedFeatures: true,
+  },
+  'copilot-business': {
+    id: 'copilot-business',
+    name: 'GitHub Copilot Business',
+    toolId: 'copilot',
+    tier: 'business',
+    tierRank: 3,
+    recommendedTeamSize: 'small-team',
+    suitableUseCases: ['coding', 'ai-development', 'enterprise'],
+    perSeatCost: 19,
+    advancedFeatures: true,
+  },
+  'jira-free': {
+    id: 'jira-free',
+    name: 'Jira Free',
+    toolId: 'jira',
+    tier: 'free',
+    tierRank: 0,
+    recommendedTeamSize: 'startup',
+    suitableUseCases: ['startup', 'coding'],
+    perSeatCost: 0,
+    advancedFeatures: false,
+  },
+  'jira-standard': {
+    id: 'jira-standard',
+    name: 'Jira Standard',
+    toolId: 'jira',
+    tier: 'team',
+    tierRank: 2,
+    recommendedTeamSize: 'small-team',
+    suitableUseCases: ['coding', 'product-management', 'mixed'],
+    perSeatCost: 8,
+    advancedFeatures: true,
+  },
+  'jira-enterprise': {
+    id: 'jira-enterprise',
+    name: 'Jira Enterprise',
+    toolId: 'jira',
+    tier: 'enterprise',
+    tierRank: 4,
+    recommendedTeamSize: 'enterprise',
+    suitableUseCases: ['enterprise', 'product-management'],
+    perSeatCost: 16,
+    advancedFeatures: true,
+  },
+  'linear-free': {
+    id: 'linear-free',
+    name: 'Linear Free',
+    toolId: 'linear',
+    tier: 'free',
+    tierRank: 0,
+    recommendedTeamSize: 'startup',
+    suitableUseCases: ['coding', 'startup', 'product-management'],
+    perSeatCost: 0,
+    advancedFeatures: false,
+  },
+  'linear-team': {
+    id: 'linear-team',
+    name: 'Linear Team',
+    toolId: 'linear',
+    tier: 'team',
+    tierRank: 2,
+    recommendedTeamSize: 'startup',
+    suitableUseCases: ['coding', 'startup', 'product-management'],
+    perSeatCost: 8,
+    advancedFeatures: true,
+  },
+  'linear-business': {
+    id: 'linear-business',
+    name: 'Linear Business',
+    toolId: 'linear',
+    tier: 'business',
+    tierRank: 3,
+    recommendedTeamSize: 'small-team',
+    suitableUseCases: ['coding', 'enterprise', 'product-management'],
+    perSeatCost: 12,
+    advancedFeatures: true,
+  },
+  'notion-free': {
+    id: 'notion-free',
+    name: 'Notion Free',
+    toolId: 'notion',
+    tier: 'free',
+    tierRank: 0,
+    recommendedTeamSize: 'solo',
+    suitableUseCases: ['writing', 'research', 'product-management'],
+    perSeatCost: 0,
+    advancedFeatures: false,
+  },
+  'notion-team': {
+    id: 'notion-team',
+    name: 'Notion Team',
+    toolId: 'notion',
+    tier: 'team',
+    tierRank: 2,
+    recommendedTeamSize: 'startup',
+    suitableUseCases: ['writing', 'research', 'product-management', 'startup'],
+    perSeatCost: 10,
+    advancedFeatures: true,
+  },
+  'notion-enterprise': {
+    id: 'notion-enterprise',
+    name: 'Notion Enterprise',
+    toolId: 'notion',
+    tier: 'enterprise',
+    tierRank: 4,
+    recommendedTeamSize: 'enterprise',
+    suitableUseCases: ['enterprise', 'product-management', 'mixed'],
+    perSeatCost: 18,
+    advancedFeatures: true,
+  },
+  'slack-free': {
+    id: 'slack-free',
+    name: 'Slack Free',
+    toolId: 'slack',
+    tier: 'free',
+    tierRank: 0,
+    recommendedTeamSize: 'startup',
+    suitableUseCases: ['mixed', 'startup', 'coding'],
+    perSeatCost: 0,
+    advancedFeatures: false,
+  },
+  'slack-pro': {
+    id: 'slack-pro',
+    name: 'Slack Pro',
+    toolId: 'slack',
+    tier: 'pro',
+    tierRank: 1,
+    recommendedTeamSize: 'startup',
+    suitableUseCases: ['mixed', 'startup', 'coding'],
+    perSeatCost: 8,
+    advancedFeatures: true,
+  },
+  'slack-business': {
+    id: 'slack-business',
+    name: 'Slack Business+',
+    toolId: 'slack',
+    tier: 'business',
+    tierRank: 3,
+    recommendedTeamSize: 'small-team',
+    suitableUseCases: ['enterprise', 'mixed'],
+    perSeatCost: 15,
+    advancedFeatures: true,
+  },
+  'figma-free': {
+    id: 'figma-free',
+    name: 'Figma Free',
+    toolId: 'figma',
+    tier: 'free',
+    tierRank: 0,
+    recommendedTeamSize: 'solo',
+    suitableUseCases: ['design', 'product-management'],
+    perSeatCost: 0,
+    advancedFeatures: false,
+  },
+  'figma-pro': {
+    id: 'figma-pro',
+    name: 'Figma Pro',
+    toolId: 'figma',
+    tier: 'pro',
+    tierRank: 1,
+    recommendedTeamSize: 'startup',
+    suitableUseCases: ['design', 'product-management'],
+    perSeatCost: 12,
+    advancedFeatures: true,
+  },
+  'figma-enterprise': {
+    id: 'figma-enterprise',
+    name: 'Figma Enterprise',
+    toolId: 'figma',
+    tier: 'enterprise',
+    tierRank: 4,
+    recommendedTeamSize: 'enterprise',
+    suitableUseCases: ['enterprise', 'design', 'product-management'],
+    perSeatCost: 45,
+    advancedFeatures: true,
+  },
+  'docker-free': {
+    id: 'docker-free',
+    name: 'Docker Free',
+    toolId: 'docker',
+    tier: 'free',
+    tierRank: 0,
+    recommendedTeamSize: 'solo',
+    suitableUseCases: ['devops', 'coding'],
+    perSeatCost: 0,
+    advancedFeatures: false,
+  },
+  'docker-pro': {
+    id: 'docker-pro',
+    name: 'Docker Pro',
+    toolId: 'docker',
+    tier: 'pro',
+    tierRank: 1,
+    recommendedTeamSize: 'startup',
+    suitableUseCases: ['devops', 'coding', 'ai-development'],
+    perSeatCost: 5,
+    advancedFeatures: true,
+  },
+  'docker-business': {
+    id: 'docker-business',
+    name: 'Docker Business',
+    toolId: 'docker',
+    tier: 'business',
+    tierRank: 3,
+    recommendedTeamSize: 'small-team',
+    suitableUseCases: ['devops', 'enterprise', 'ai-development'],
+    perSeatCost: 21,
+    advancedFeatures: true,
+  },
+  'kubernetes-free': {
+    id: 'kubernetes-free',
+    name: 'Kubernetes Free',
+    toolId: 'kubernetes',
+    tier: 'free',
+    tierRank: 0,
+    recommendedTeamSize: 'solo',
+    suitableUseCases: ['devops', 'coding'],
+    perSeatCost: 0,
+    advancedFeatures: false,
+  },
+  'kubernetes-enterprise': {
+    id: 'kubernetes-enterprise',
+    name: 'Kubernetes Enterprise',
+    toolId: 'kubernetes',
+    tier: 'enterprise',
+    tierRank: 4,
+    recommendedTeamSize: 'enterprise',
+    suitableUseCases: ['devops', 'enterprise'],
+    monthlyFlatCost: 5000,
+    advancedFeatures: true,
+  },
+  'aws-free': {
+    id: 'aws-free',
+    name: 'AWS Free Tier',
+    toolId: 'aws',
+    tier: 'free',
+    tierRank: 0,
+    recommendedTeamSize: 'solo',
+    suitableUseCases: ['devops', 'coding'],
+    perSeatCost: 0,
+    advancedFeatures: false,
+  },
+  'aws-pro': {
+    id: 'aws-pro',
+    name: 'AWS Pro',
+    toolId: 'aws',
+    tier: 'pro',
+    tierRank: 1,
+    recommendedTeamSize: 'startup',
+    suitableUseCases: ['devops', 'ai-development', 'startup'],
+    monthlyFlatCost: 100,
+    advancedFeatures: true,
+  },
+  'aws-enterprise': {
+    id: 'aws-enterprise',
+    name: 'AWS Enterprise',
+    toolId: 'aws',
+    tier: 'enterprise',
+    tierRank: 4,
+    recommendedTeamSize: 'enterprise',
+    suitableUseCases: ['devops', 'enterprise', 'ai-development'],
+    monthlyFlatCost: 2000,
+    advancedFeatures: true,
+  },
+  'vercel-free': {
+    id: 'vercel-free',
+    name: 'Vercel Free',
+    toolId: 'vercel',
+    tier: 'free',
+    tierRank: 0,
+    recommendedTeamSize: 'solo',
+    suitableUseCases: ['coding', 'startup'],
+    perSeatCost: 0,
+    advancedFeatures: false,
+  },
+  'vercel-pro': {
+    id: 'vercel-pro',
+    name: 'Vercel Pro',
+    toolId: 'vercel',
+    tier: 'pro',
+    tierRank: 1,
+    recommendedTeamSize: 'startup',
+    suitableUseCases: ['coding', 'startup'],
+    perSeatCost: 20,
+    advancedFeatures: true,
+  },
+  'vercel-team': {
+    id: 'vercel-team',
+    name: 'Vercel Team',
+    toolId: 'vercel',
+    tier: 'team',
+    tierRank: 2,
+    recommendedTeamSize: 'small-team',
+    suitableUseCases: ['coding', 'startup', 'enterprise'],
+    perSeatCost: 10,
+    advancedFeatures: true,
+  },
+};
+
+export const getPlanEntry = (toolId: string, planName: string): PlanCatalogEntry | undefined => {
+  const key = `${toolId}-${planName.toLowerCase()}`;
+  return PLAN_CATALOG[key];
 };

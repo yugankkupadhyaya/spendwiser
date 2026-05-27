@@ -1,41 +1,59 @@
 import { AuditFinding } from '../../../types/audit-engine.types';
 import { AuditFormValues } from '../../../types/audit.types';
 
-import { getTeamScale } from '../../utils/get-team-size';
+import { getTeamScale, TEAM_SCALE_RANK } from '../../utils/get-team-size';
 
-import { PLAN_CATALOG } from '../config/plan-catalog';
+import { getPlanEntry } from '../config/plan-catalog';
 
 export const detectPlanMismatch = (data: AuditFormValues): AuditFinding[] => {
   const findings: AuditFinding[] = [];
 
   const teamScale = getTeamScale(data.teamSize);
+  const teamScaleRank = TEAM_SCALE_RANK[teamScale];
 
   for (const tool of data.tools) {
-    const planMetadata = PLAN_CATALOG[tool.planName.toLowerCase()];
+    const plan = getPlanEntry(tool.toolId, tool.planName);
 
-    // Skip unknown plans
-    if (!planMetadata) {
+    if (!plan) {
       continue;
     }
 
-    const recommendedScale = planMetadata.recommendedTeamSize;
+    const planTierRank = plan.tierRank;
+    const scaleDiff = planTierRank - teamScaleRank;
 
-    const isMismatch = recommendedScale !== teamScale;
+    if (scaleDiff > 0) {
+      const severity = scaleDiff >= 3 ? 'high' : scaleDiff >= 2 ? 'medium' : 'low';
 
-    if (isMismatch) {
+      const directionLabel =
+        plan.recommendedTeamSize === 'enterprise' ? 'enterprise-grade' : `${plan.recommendedTeamSize}-scale`;
+      const teamLabel = teamScale === 'solo' ? 'a solo operation' : `a ${teamScale}-scale team`;
+
+      findings.push({
+        type: 'OVERPROVISIONED_PLAN',
+        severity,
+        action: 'downgrade',
+        category: 'cost',
+        title: `${plan.name} is overprovisioned for ${teamScale} team`,
+        description: `${plan.name} is designed for ${directionLabel} teams, but your organization is ${teamLabel}. You are likely paying for features and capacity you do not need.`,
+        recommendation: `Downgrade to a ${teamScale}-appropriate plan for ${plan.name}. Consider ${plan.toolId} Pro or Team tier to match your operational scale.`,
+        estimatedSavings: Math.round(tool.monthlySpend * 0.4),
+        priorityScore: 0,
+        priorityLabel: 'long-term',
+        relatedToolIds: [tool.toolId],
+      });
+    } else if (scaleDiff < 0 && teamScale === 'enterprise') {
       findings.push({
         type: 'PLAN_MISMATCH',
-
         severity: 'medium',
-
-        title: `${planMetadata.name} may be overprovisioned`,
-
-        description: `${planMetadata.name} is generally recommended for ${recommendedScale} teams, while your organization appears closer to ${teamScale} scale.`,
-
-        recommendation:
-          'Review whether the current pricing tier is necessary for your operational scale.',
-
-        estimatedSavings: Math.round(tool.monthlySpend * 0.3),
+        action: 'optimize',
+        category: 'operations',
+        title: `${plan.name} may be underpowered for enterprise scale`,
+        description: `Your organization is at enterprise scale but ${plan.name} is designed for ${plan.recommendedTeamSize} teams. You may be missing advanced features, controls, or support.`,
+        recommendation: `Evaluate whether upgrading ${plan.name} to an enterprise plan provides needed security, admin, or compliance features.`,
+        estimatedSavings: 0,
+        priorityScore: 0,
+        priorityLabel: 'long-term',
+        relatedToolIds: [tool.toolId],
       });
     }
   }

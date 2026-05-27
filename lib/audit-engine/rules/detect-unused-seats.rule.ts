@@ -25,16 +25,16 @@ export const detectUnusedSeats = (data: AuditFormValues): AuditFinding[] => {
 
     findings.push({
       type: 'UNUSED_SEATS',
-
       severity: unusedSeats >= 5 ? 'high' : 'medium',
-
+      action: 'downgrade',
+      category: 'cost',
       title: `Unused ${tool.toolId} seats detected`,
-
       description: `${unusedSeats} purchased seats appear unused based on current team size.`,
-
       recommendation: 'Reduce unused seats to optimize monthly SaaS spend.',
-
       estimatedSavings,
+      priorityScore: 0,
+      priorityLabel: 'long-term',
+      relatedToolIds: [tool.toolId],
     });
   }
 

@@ -73,9 +73,9 @@ export default function Page() {
 
   const onSubmitForm = (data: AuditFormValues) => {
     setAuditData(data);
-    const findings = runAuditEngine(data);
+    const result = runAuditEngine(data);
 
-    setAuditFindings(findings);
+    setAuditFindings(result.findings);
     toast.success('Audit submitted successfully!');
     router.push('/audit/results');
   };
@@ -353,14 +353,14 @@ export default function Page() {
                   borderColor: 'rgba(255,255,255,0.15)',
                 }}
                 whileTap={{ scale: 0.995 }}
-                onClick={() =>
-                  append({
-                    toolId: 'chatgpt',
-                    planName: 'ChatGPT Team',
-                    monthlySpend: 0,
-                    seatsCount: 0,
-                  })
-                }
+                  onClick={() =>
+                    append({
+                      toolId: 'chatgpt',
+                      planName: 'team',
+                      monthlySpend: 0,
+                      seatsCount: 0,
+                    })
+                  }
                 className="w-full border border-dashed border-white/5 bg-[#0A0A0C]/30 hover:bg-[#0A0A0C]/60 text-neutral-400 hover:text-white transition-colors text-xs font-mono py-4 flex items-center justify-center space-x-2 rounded-2xl"
               >
                 <Plus className="w-4 h-4" />

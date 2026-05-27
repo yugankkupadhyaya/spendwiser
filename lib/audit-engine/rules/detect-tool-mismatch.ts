@@ -21,21 +21,20 @@ export const detectToolMismatch = (
     const isSupportedUseCase =
       toolMetadata.suitableUseCases.includes(primaryUseCase);
 
-    // If tool does not align with team's main use case
     if (!isSupportedUseCase) {
       findings.push({
         type: 'TOOL_MISMATCH',
-
         severity: 'medium',
-
+        action: 'replace',
+        category: 'efficiency',
         title: `${toolMetadata.name} may not align with your workflow`,
-
         description: `${toolMetadata.name} is not commonly optimized for ${primaryUseCase} focused teams.`,
-
         recommendation:
           'Review whether this tool is actively contributing to your team workflows or if a better-aligned alternative exists.',
-
         estimatedSavings: tool.monthlySpend,
+        priorityScore: 0,
+        priorityLabel: 'long-term',
+        relatedToolIds: [tool.toolId],
       });
     }
   }

@@ -3,19 +3,34 @@ import { AuditFormValues } from '../../types/audit.types';
 import { detectPlanMismatch } from './rules/detect-plan-mismatch';
 import { detectToolMismatch } from './rules/detect-tool-mismatch';
 import { detectUnusedSeats } from './rules/detect-unused-seats.rule';
+import { detectToolOverlap } from './rules/detect-tool-overlap';
 
-import { AuditFinding } from '../../types/audit-engine.types';
+import { generatePlanRecommendation } from './recommendations/generatePlanRecommendation';
+import { generateAlternativeSuggestions } from './recommendations/generateAlternativeSuggestions';
+import { generateConsolidationSuggestions } from './recommendations/generateConsolidationSuggestions';
+import { prioritizeFindings } from './recommendations/prioritizeFindings';
 
-export const runAuditEngine = (data: AuditFormValues): AuditFinding[] => {
-  const findings: AuditFinding[] = [];
+import { generateOptimizationSummary } from './generate-optimization-summary';
 
-  const unusedSeatFindings = detectUnusedSeats(data);
+import { AuditEngineResult } from '../../types/audit-engine.types';
 
-  const toolMismatchFindings = detectToolMismatch(data);
+export const runAuditEngine = (data: AuditFormValues): AuditEngineResult => {
+  const ruleFindings = [
+    ...detectUnusedSeats(data),
+    ...detectToolMismatch(data),
+    ...detectPlanMismatch(data),
+    ...detectToolOverlap(data),
+  ];
 
-  const planMismatchFindings = detectPlanMismatch(data);
+  const recommendationFindings = [
+    ...generatePlanRecommendation(data, ruleFindings),
+    ...generateAlternativeSuggestions(data, ruleFindings),
+    ...generateConsolidationSuggestions(data, ruleFindings),
+  ];
 
-  findings.push(...unusedSeatFindings, ...toolMismatchFindings, ...planMismatchFindings);
+  const allFindings = prioritizeFindings([...ruleFindings, ...recommendationFindings]);
 
-  return findings;
+  const summary = generateOptimizationSummary(allFindings, data);
+
+  return { findings: allFindings, summary };
 };
