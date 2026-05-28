@@ -9,4 +9,6 @@ export type UseCase =
   | 'mixed'
   | 'startup'
   | 'enterprise'
-  | 'data-analysis';
+  | 'data-analysis'
+  | 'customer-support'
+  | 'sales';

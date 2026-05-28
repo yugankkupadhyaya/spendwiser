@@ -6,7 +6,6 @@ import { TOOL_CATALOG } from '../config/tool-catalog';
 const OVERLAP_NAMES: Record<string, string> = {
   'ai-assistant': 'AI assistant',
   'ai-code-editor': 'AI code editor',
-  'ai-code-assistant': 'AI code assistant',
   'project-management': 'project management tool',
   'design-suite': 'design tool',
   communication: 'communication platform',
@@ -14,6 +13,11 @@ const OVERLAP_NAMES: Record<string, string> = {
   'container-orchestration': 'container orchestration platform',
   'cloud-provider': 'cloud provider',
   'deployment-platform': 'deployment platform',
+  'cache-database': 'cache/database tool',
+  'database': 'database tool',
+  'orm': 'ORM tool',
+  'ui-framework': 'UI framework',
+  'animation-library': 'animation library',
 };
 
 export const detectToolOverlap = (data: AuditFormValues): AuditFinding[] => {

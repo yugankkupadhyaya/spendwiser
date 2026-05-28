@@ -474,6 +474,12 @@ export const PLAN_CATALOG: Record<string, PlanCatalogEntry> = {
 };
 
 export const getPlanEntry = (toolId: string, planName: string): PlanCatalogEntry | undefined => {
-  const key = `${toolId}-${planName.toLowerCase()}`;
-  return PLAN_CATALOG[key];
+  const tier = planName.toLowerCase() as PlanTier;
+  const directKey = `${toolId}-${tier}`;
+  if (PLAN_CATALOG[directKey]) {
+    return PLAN_CATALOG[directKey];
+  }
+  return Object.values(PLAN_CATALOG).find(
+    (entry) => entry.toolId === toolId && entry.tier === tier
+  );
 };

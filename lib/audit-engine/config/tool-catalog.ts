@@ -269,7 +269,7 @@ export const TOOL_CATALOG: Record<string, ToolCatalogEntry> = {
 
     recommendedTeamSize: 'small-team',
 
-    overlapGroup: 'ai-code-assistant',
+    overlapGroup: 'ai-code-editor',
   },
 
   gemini: {
@@ -526,5 +526,109 @@ export const TOOL_CATALOG: Record<string, ToolCatalogEntry> = {
     recommendedTeamSize: 'startup',
 
     overlapGroup: 'animation-library',
+  },
+
+  windsurf: {
+    id: 'windsurf',
+
+    name: 'Windsurf',
+
+    category: 'coding',
+
+    suitableUseCases: ['coding', 'ai-development'],
+
+    complexity: 'moderate',
+
+    recommendedTeamSize: 'startup',
+
+    overlapGroup: 'ai-code-editor',
+  },
+
+  'openai-api': {
+    id: 'openai-api',
+
+    name: 'OpenAI API',
+
+    category: 'ai',
+
+    suitableUseCases: ['ai-development', 'coding', 'data-analysis'],
+
+    complexity: 'advanced',
+
+    recommendedTeamSize: 'small-team',
+  },
+
+  'anthropic-api': {
+    id: 'anthropic-api',
+
+    name: 'Anthropic API',
+
+    category: 'ai',
+
+    suitableUseCases: ['ai-development', 'coding', 'research'],
+
+    complexity: 'advanced',
+
+    recommendedTeamSize: 'small-team',
+  },
+
+  'notion-ai': {
+    id: 'notion-ai',
+
+    name: 'Notion AI',
+
+    category: 'productivity',
+
+    suitableUseCases: ['writing', 'research', 'product-management'],
+
+    complexity: 'moderate',
+
+    recommendedTeamSize: 'small-team',
+
+    overlapGroup: 'ai-assistant',
+  },
+
+  perplexity: {
+    id: 'perplexity',
+
+    name: 'Perplexity',
+
+    category: 'research',
+
+    suitableUseCases: ['research', 'writing', 'data-analysis'],
+
+    complexity: 'simple',
+
+    recommendedTeamSize: 'startup',
+  },
+
+  midjourney: {
+    id: 'midjourney',
+
+    name: 'Midjourney',
+
+    category: 'design',
+
+    suitableUseCases: ['design'],
+
+    complexity: 'moderate',
+
+    recommendedTeamSize: 'startup',
+  },
+
+  'mongodb-atlas': {
+    id: 'mongodb-atlas',
+
+    name: 'MongoDB Atlas',
+
+    category: 'cloud',
+
+    suitableUseCases: ['coding', 'data-analysis', 'startup'],
+
+    complexity: 'moderate',
+
+    recommendedTeamSize: 'startup',
+
+    overlapGroup: 'database',
   },
 };

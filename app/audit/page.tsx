@@ -55,7 +55,7 @@ export default function Page() {
     },
   });
   const { setAuditData } = useAuditStore();
-  const { setAuditFindings } = useFindingsStore();
+  const { setAuditFindings, setAuditSummary } = useFindingsStore();
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -76,6 +76,7 @@ export default function Page() {
     const result = runAuditEngine(data);
 
     setAuditFindings(result.findings);
+    setAuditSummary(result.summary);
     toast.success('Audit submitted successfully!');
     router.push('/audit/results');
   };

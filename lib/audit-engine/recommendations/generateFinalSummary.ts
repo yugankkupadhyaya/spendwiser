@@ -1,8 +1,8 @@
-import { AuditFinding, OptimizationSummary } from '../../types/audit-engine.types';
-import { getTeamScale } from '../utils/get-team-size';
-import { AuditFormValues } from '../../types/audit.types';
+import { AuditFinding, OptimizationSummary } from '../../../types/audit-engine.types';
+import { getTeamScale } from '../../utils/get-team-size';
+import { AuditFormValues } from '../../../types/audit.types';
 
-export function generateOptimizationSummary(
+export function generateFinalSummary(
   findings: AuditFinding[],
   data: AuditFormValues
 ): OptimizationSummary {
@@ -22,6 +22,7 @@ export function generateOptimizationSummary(
 
   const teamScale = getTeamScale(data.teamSize);
   const toolCount = data.tools.length;
+  const monthlySpendTotal = data.tools.reduce((sum, t) => sum + t.monthlySpend, 0);
 
   const overprovisionedCount = findings.filter(
     (f) => f.type === 'OVERPROVISIONED_PLAN'
@@ -36,37 +37,33 @@ export function generateOptimizationSummary(
     summary =
       'Your stack is efficiently configured for your team scale. No optimization opportunities detected.';
   } else {
-    const hasOverprovisioning = overprovisionedCount > 0;
-    const hasOverlap = overlapCount > 0;
-    const hasMismatch = mismatchCount > 0;
-    const hasUnusedSeats = unusedSeatsCount > 0;
-
     const organizationLabel = toolCount > 8 ? 'organization' : 'engineering team';
-    const savingsPercent = totalEstimatedYearlySavings > 0
-      ? Math.min(60, Math.max(10, Math.round(
-          (totalEstimatedYearlySavings / (totalEstimatedYearlySavings + (data.tools.reduce((s, t) => s + t.monthlySpend, 0) * 12))) * 100
-        )))
-      : 0;
+    const yearlySpend = monthlySpendTotal * 12;
+    const savingsPercent =
+      yearlySpend > 0
+        ? Math.min(60, Math.max(10, Math.round((totalEstimatedYearlySavings / yearlySpend) * 100)))
+        : 0;
 
     const reasonParts: string[] = [];
-    if (hasOverprovisioning) {
+    if (overprovisionedCount > 0) {
       reasonParts.push(`downgrading ${overprovisionedCount} overprovisioned plan(s)`);
     }
-    if (hasOverlap) {
+    if (overlapCount > 0) {
       reasonParts.push(`consolidating ${overlapCount} overlapping tool area(s)`);
     }
-    if (hasMismatch) {
-      reasonParts.push(`re-addressing ${mismatchCount} misaligned tool(s)`);
+    if (mismatchCount > 0) {
+      reasonParts.push(`replacing ${mismatchCount} misaligned tool(s)`);
     }
-    if (hasUnusedSeats) {
+    if (unusedSeatsCount > 0) {
       reasonParts.push(`rightsizing ${unusedSeatsCount} seat allocation(s)`);
     }
 
     if (reasonParts.length > 0) {
       const lastPart = reasonParts.pop();
-      const joined = reasonParts.length > 0
-        ? `${reasonParts.join(', ')}, and ${lastPart}`
-        : lastPart!;
+      const joined =
+        reasonParts.length > 0
+          ? `${reasonParts.join(', ')}, and ${lastPart}`
+          : lastPart!;
 
       if (savingsPercent >= 30) {
         summary = `Your stack appears overprovisioned for a ${teamScale}-scale ${organizationLabel}. ${joined} could reduce spend by approximately ${savingsPercent}%.`;

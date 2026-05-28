@@ -183,6 +183,7 @@ function TypeIcon({ type }: { type: string }) {
 export default function AuditResultsPage() {
   const router = useRouter();
   const findings = useFindingsStore((state) => state.auditFindings);
+  const summary = useFindingsStore((state) => state.auditSummary);
 
   const [filter, setFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
 
@@ -193,8 +194,8 @@ export default function AuditResultsPage() {
   const totalMonthlySavings = findings.reduce((acc, curr) => acc + (curr.estimatedSavings ?? 0), 0);
   const totalYearlySavings = totalMonthlySavings * 12;
 
-  const criticalCount = findings.filter((f) => (f.priorityLabel ?? 'long-term') === 'critical').length;
-  const quickWinCount = findings.filter((f) => (f.priorityLabel ?? 'long-term') === 'quick-win').length;
+  const criticalCount = summary?.criticalCount ?? findings.filter((f) => (f.priorityLabel ?? 'long-term') === 'critical').length;
+  const quickWinCount = summary?.quickWinCount ?? findings.filter((f) => (f.priorityLabel ?? 'long-term') === 'quick-win').length;
 
   const filteredFindings = findings.filter((f) =>
     filter === 'all' || f.severity === filter
@@ -294,9 +295,9 @@ export default function AuditResultsPage() {
                     </span>
                   </div>
                   <p className="text-sm text-neutral-200 leading-relaxed">
-                    {findings.length > 0
+                    {summary?.summary ?? (findings.length > 0
                       ? `Your stack has ${findings.length} optimization opportunity(ies). ${criticalCount > 0 ? `${criticalCount} critical issue(s) require immediate attention. ` : ''}${quickWinCount > 0 ? `${quickWinCount} quick win(s) can be addressed with minimal effort. ` : ''}Estimated annual savings of $${totalYearlySavings.toLocaleString()}.`
-                      : 'Your stack is efficiently configured.'}
+                      : 'Your stack is efficiently configured.')}
                   </p>
                 </motion.div>
               )}

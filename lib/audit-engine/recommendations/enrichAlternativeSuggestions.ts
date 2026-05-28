@@ -2,14 +2,7 @@ import { AuditFinding, AlternativeSuggestion } from '../../../types/audit-engine
 import { AuditFormValues } from '../../../types/audit.types';
 import { TOOL_CATALOG } from '../config/tool-catalog';
 
-type AlternativeDef = {
-  toolId: string;
-  planName: string;
-  estimatedMonthlyCost: number;
-  rationale: string;
-};
-
-const TOOL_ALTERNATIVES: Record<string, AlternativeDef[]> = {
+const TOOL_ALTERNATIVES: Record<string, { toolId: string; planName: string; estimatedMonthlyCost: number; rationale: string }[]> = {
   chatgpt: [
     {
       toolId: 'claude',
@@ -108,24 +101,23 @@ const TOOL_ALTERNATIVES: Record<string, AlternativeDef[]> = {
   ],
 };
 
-export const generateAlternativeSuggestions = (
+export const enrichAlternativeSuggestions = (
   data: AuditFormValues,
-  existingFindings: AuditFinding[]
+  findings: AuditFinding[]
 ): AuditFinding[] => {
-  const findings: AuditFinding[] = [];
   const toolIdsInUse = new Set(data.tools.map((t) => t.toolId));
 
-  const toolsWithMismatchFinding = new Set(
-    existingFindings
-      .filter((f) => f.type === 'TOOL_MISMATCH')
-      .flatMap((f) => f.relatedToolIds ?? [])
-  );
+  return findings.map((finding) => {
+    if (finding.type !== 'TOOL_MISMATCH') return finding;
 
-  for (const tool of data.tools) {
-    if (toolsWithMismatchFinding.has(tool.toolId)) continue;
+    const toolId = finding.relatedToolIds?.[0];
+    if (!toolId) return finding;
 
-    const alternativesDefs = TOOL_ALTERNATIVES[tool.toolId];
-    if (!alternativesDefs) continue;
+    const tool = data.tools.find((t) => t.toolId === toolId);
+    if (!tool) return finding;
+
+    const alternativesDefs = TOOL_ALTERNATIVES[toolId];
+    if (!alternativesDefs) return finding;
 
     const alternatives: AlternativeSuggestion[] = alternativesDefs
       .filter((alt) => !toolIdsInUse.has(alt.toolId))
@@ -141,26 +133,16 @@ export const generateAlternativeSuggestions = (
         };
       });
 
-    if (alternatives.length === 0) continue;
+    if (alternatives.length === 0) return finding;
 
-    const totalSavings = alternatives.reduce((s, a) => s + a.estimatedSavings, 0);
-    const avgSavings = alternatives.length > 0 ? Math.round(totalSavings / alternatives.length) : 0;
-
-    findings.push({
-      type: 'TOOL_MISMATCH',
-      severity: 'low',
-      action: 'replace',
-      category: 'cost',
-      title: `Consider alternatives to ${TOOL_CATALOG[tool.toolId]?.name ?? tool.toolId}`,
-      description: `Your team uses ${TOOL_CATALOG[tool.toolId]?.name ?? tool.toolId} at $${tool.monthlySpend}/mo. There are ${alternatives.length} alternative tool(s) worth evaluating that may better fit your workflow or budget.`,
-      recommendation: `Evaluate alternatives: ${alternatives.map((a) => a.name).join(', ')}. These options may provide similar value at lower cost or with better team alignment.`,
-      estimatedSavings: avgSavings,
-      priorityScore: 0,
-      priorityLabel: 'long-term',
+    return {
+      ...finding,
       alternatives,
-      relatedToolIds: [tool.toolId, ...alternatives.map((a) => a.toolId)],
-    });
-  }
-
-  return findings;
+      recommendation: `Review whether this tool is actively contributing to your team workflows. Consider alternatives: ${alternatives.map((a) => a.name).join(', ')}.`,
+      estimatedSavings: Math.max(
+        finding.estimatedSavings,
+        Math.round(alternatives.reduce((s, a) => s + a.estimatedSavings, 0) / alternatives.length)
+      ),
+    };
+  });
 };
